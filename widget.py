@@ -3,9 +3,12 @@ import pandas as pd
 import random
 
 
-class ChatWidget(QtWidgets.QWidget):
+class MaintWidget(QtWidgets.QWidget):
     def __init__(self, csv_path):
         super().__init__()
+        self.is_dragging = False  # 드래그 상태를 추적
+        self.mouse_start_position = None
+        self.window_start_position = None
 
         # Load CSV file
         self.words_data = pd.read_csv(
@@ -44,6 +47,11 @@ class ChatWidget(QtWidgets.QWidget):
         self.contentLabel.setWordWrap(True)
         self.contentLabel.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.contentLabel.setFixedWidth(550)
+
+        self.contentLabel.mousePressEvent = self.mousePressEvent
+        self.contentLabel.mouseMoveEvent = self.mouseMoveEvent
+        self.contentLabel.mouseReleaseEvent = self.mouseReleaseEvent
+
         self.update_content()  # Initialize with the first word
 
         # Buttons
@@ -100,3 +108,22 @@ class ChatWidget(QtWidgets.QWidget):
         """Show the previous word in the list."""
         self.current_index = random.randint(0, len(self.words_data) - 1)
         self.update_content()
+
+    def mousePressEvent(self, event):
+        """Handle mouse press event for dragging."""
+        if event.button() == QtCore.Qt.LeftButton:
+            self.is_dragging = True
+            self.mouse_start_position = event.globalPos()
+            self.window_start_position = self.frameGeometry().topLeft()
+
+    def mouseMoveEvent(self, event):
+        """Handle mouse move event for dragging."""
+        if self.is_dragging:
+            current_position = event.globalPos()
+            offset = current_position - self.mouse_start_position
+            self.move(self.window_start_position + offset)
+
+    def mouseReleaseEvent(self, event):
+        """Handle mouse release event for dragging."""
+        if event.button() == QtCore.Qt.LeftButton:
+            self.is_dragging = False
