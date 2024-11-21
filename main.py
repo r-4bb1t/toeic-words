@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import QFontDatabase, QFont
 
 from widget import MaintWidget
@@ -18,7 +18,7 @@ def main():
         print("Font loading failed. Using default font.")
     app.setFont(QFont("Pretendard"))
 
-    chat_widget = MaintWidget("./words.csv")
+    chat_widget = MaintWidget(csv_path="./words.csv")
     chat_widget.setStyleSheet(
         "background-color: rgba(0, 0, 0, 0.4); border-radius: 30px;"
     )
